@@ -2260,7 +2260,7 @@ int main (int argc, char** argv) {
 		print(&fetch,&decode,&execute,&memory);
 		Hazard(&fetch,&decode,&execute,&memory);
 		//imprime(reg);
-		//system("read");
+		system("read");
 		if (stall==1) {
 			permissao_w=0;
 		}
@@ -2279,6 +2279,13 @@ int main (int argc, char** argv) {
 	imprime(reg);
     return 0;
 }
+
+
+
+
+
+
+
 
 
 
