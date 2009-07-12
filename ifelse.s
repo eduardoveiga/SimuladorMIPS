@@ -1,0 +1,11 @@
+addi $s0,$zero,10;
+addi $s1,$zero,5;
+addi $s2,$zero,3;
+slt $t0,$s1,$s0;
+bne $t0,$zero,else;
+slt $t1,$s0,$s2;
+bne $t1,$zero,else;
+addi $s0,$s0,-4;
+j exit;
+else: addi $s0,$s0,4;
+exit: nop ;
