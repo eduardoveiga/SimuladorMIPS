@@ -5,6 +5,7 @@
 #define N 256
 #define linha1 8
 #define linha2 4
+char ARQ[30];
 typedef struct instrucao {
 	int op,funct,tipo,rs1,rt1,rd1,sh1,imediato,off,end1,extensao;
 	char rs[6],rt[6],rd[6],end[11],offset[11],sh[6],im[11];
@@ -989,7 +990,7 @@ void filtro (char * inst,Instrucao x,int n,FILE * disco) {
 		}
 		else {
 			strcat(x.end, ":");
-			x.end1=busca_linha("teste.txt",x.end);
+			x.end1=busca_linha(ARQ,x.end);
 		}
 	}
 	if (strcmp(nome,"lui")==0) {
@@ -1119,7 +1120,7 @@ void filtro (char * inst,Instrucao x,int n,FILE * disco) {
 		}
 		else {
 			strcat(x.end, ":");
-			x.end1=busca_linha("teste.txt",x.end);
+			x.end1=busca_linha(ARQ,x.end);
 		}
 	}
 	x.validade=1;
@@ -1132,25 +1133,25 @@ void carrega_memoria (FILE * disco,int cont) {
 void imprime_mem (Instrucao memoria[],int cont) {
 	int i;
 	for (i=0;i<N;i++) {
-		printf("\nop: %d\n", memoria[i].op);
-		printf("rd: %d\n", memoria[i].rd1);
-		printf("rs: %d\n", memoria[i].rs1);
-		printf("rt: %d\n", memoria[i].rt1);
-		printf("offset:%s\n", memoria[i].offset);
-		printf("validade:%d\n",memoria[i].validade);
+		printf("\nop: %.2d\n", memoria[i].op);
+		printf("rd: %.2d\n", memoria[i].rd1);
+		printf("rs: %.2d\n", memoria[i].rs1);
+		printf("rt: %.2d\n", memoria[i].rt1);
+		printf("offset:%.2s\n", memoria[i].offset);
+		printf("validade:%.2d\n",memoria[i].validade);
 	}
 }
 void imprime_mem_dados (int memoria[]) {
 	int i;
 	for (i=0;i<N;i++) {
-		printf("\nmemoria de dados [%d]: %d\n" , i, memoria[i]);
+		printf("\nmemoria de dados [%.2d]: %.4d\n" , i, memoria[i]);
 	}
 }
 void imprime_cache_dados(CacheDados cachedado[][2]){
 	int i,j;
 	for(i=0;i<linha1;i++){
 		for(j=0;j<2;j++){
-			printf("cache de dados [%d][%d] %d\n",i,j,cachedado[i][j].dado);
+			printf("cache de dados [%.2d][%.2d] %.4d\n",i,j,cachedado[i][j].dado);
 		}
 	}
 
@@ -1342,7 +1343,7 @@ void instruction_fetch (IF_ID * fetch,ID_EX * decode,int op) {
 		else {
 			pc=mux4(OrigPc,pc+1,extensao,endereco,JReg);
 			fetch->endereco=pc;
-			printf("pc %d", pc);
+			//printf("pc %d", pc);
 		}
 	}
 }
@@ -1457,23 +1458,23 @@ if (Inst->op==-1){
 }
 else {
     if(Inst->op==0){
-        printf("opcode %d\n", Inst->op);
-        printf("rs %d\n", Inst->rs1);
-        printf("rt %d\n", Inst->rt1);
-        printf("rd %d\n", Inst->rd1);
-        printf("Shamt %d\n", Inst->sh1);
-        printf("funct %d\n", Inst->funct);
+        printf("opcode %.2d\n", Inst->op);
+        printf("rs %.2d\n", Inst->rs1);
+        printf("rt %.2d\n", Inst->rt1);
+        printf("rd %.2d\n", Inst->rd1);
+        printf("Shamt %.2d\n", Inst->sh1);
+        printf("funct %.2d\n", Inst->funct);
     }
     else{
         if(Inst->op==2 || Inst->op==3){
-            printf("opcode %d\n", Inst->op);
-            printf("endereço %d", Inst->end1);
+            printf("opcode %.2d\n", Inst->op);
+            printf("endereço %.6d", Inst->end1);
         }
         else{
-            printf("opcode %d\n", Inst->op);
-            printf("rs %d\n", Inst->rs1);
-            printf("rt %d\n", Inst->rt1);
-            printf("imediato %d\n", Inst->off);
+            printf("opcode %.2d\n", Inst->op);
+            printf("rs %.2d\n", Inst->rs1);
+            printf("rt %.2d\n", Inst->rt1);
+            printf("imediato %.2d\n", Inst->off);
 
 
 
@@ -1493,8 +1494,8 @@ void print (IF_ID * fetch,ID_EX * decode,EX_MEM* execute,MEM_WB * memory) {
 		}
 		else {
 
-			printf("PC %d\n",pc);
-			printf("pc incrementado %d\n",fetch->endereco);
+			printf("PC %.2d\n",pc);
+			printf("pc incrementado %.2d\n",fetch->endereco);
 			printf("\n\t Fetch\n\n");
 			printinst(&fetch->inst);
 			//printf("executando Instruçao\n op %d \nrs %d \nrt %d \nrd %d \nsh %d\n",fetch->inst.op,fetch->inst.rs1,fetch->inst.rt1,fetch->inst.rd1,fetch->inst.sh1,fetch->inst.funct);
@@ -1510,19 +1511,19 @@ void print (IF_ID * fetch,ID_EX * decode,EX_MEM* execute,MEM_WB * memory) {
 			//printf("executando Instruçao\n op %d \nrs %d \nrt %d \nrd %d \nsh %d\n",decode->inst.op,decode->inst.rs1,decode->inst.rt1,decode->inst.rd1,decode->inst.sh1,decode->inst.funct);
 			//printf("imediato %d \nendereço %d \noffset %d\n\n\n\n",decode->inst.imediato,decode->inst.end1,decode->inst.off);
 			printf("\n\tsinais de controle\n");
-			printf("\tOrigPC %d\n",OrigPc);
-			printf("\tEscreveReg %d\n",decode->EscreveReg);
-			printf("\tBranch %d \n",decode->Branch);
-			printf("\tRegDst %d\n",decode->RegDst);
-			printf("\tOrigALU0 %d\n",decode->OrigALU1);
-			printf("\tOrigALU1 %d\n",decode->OrigALU2);
-			printf("\tLeMem %d \n",decode->LeMem);
-			printf("\tEscreveMem %d\n",decode->EscreveMem);
-			printf("\tMemParaReg %d\n",decode->MemparaReg);
-			printf("\tOpAlU %d \n",decode->OpAlu);
-			printf("\tInversor %d \n",decode->Inversor);
-			printf("\tLink %d \n\n",decode->Link);
-			printf("dado 1: %d\n dado 2: %d\n deslocamento %d\n",decode->dado1,decode->dado2,decode->deslocamento);
+			printf("\tOrigPC %.2d\n",OrigPc);
+			printf("\tEscreveReg %.2d\n",decode->EscreveReg);
+			printf("\tBranch %.2d \n",decode->Branch);
+			printf("\tRegDst %.2d\n",decode->RegDst);
+			printf("\tOrigALU0 %.2d\n",decode->OrigALU1);
+			printf("\tOrigALU1 %.2d\n",decode->OrigALU2);
+			printf("\tLeMem %.2d \n",decode->LeMem);
+			printf("\tEscreveMem %.2d\n",decode->EscreveMem);
+			printf("\tMemParaReg %.2d\n",decode->MemparaReg);
+			printf("\tOpAlU %.2d \n",decode->OpAlu);
+			printf("\tInversor %.2d \n",decode->Inversor);
+			printf("\tLink %.2d \n\n",decode->Link);
+			printf("dado 1: %.2d\n dado 2: %.2d\n deslocamento %.2d\n",decode->dado1,decode->dado2,decode->deslocamento);
 		}
 		if (execute->exit==1||execute->inst.op==-1) {
 		}
@@ -1533,16 +1534,16 @@ void print (IF_ID * fetch,ID_EX * decode,EX_MEM* execute,MEM_WB * memory) {
 
 			//;;printf("executando Instruçao \nop %d \nrs %d \nrt %d \nrd %d \nsh %d\n",execute->inst.op,execute->inst.rs1,execute->inst.rt1,execute->inst.rd1,execute->inst.sh1,execute->inst.funct);
 			//pintf("imediato %d \nendereço %d \noffset %d\n\n\n\n",execute->inst.imediato,execute->inst.end1,execute->inst.extensao);
-			printf("\nEscreveReg %d",execute->EscreveReg);
-			printf("\nLeMem %d",execute->LeMem);
-			printf("\nMemparaReg %d",execute->MemparaReg);
-			printf("\nresultado %d",execute->resultado);
-			printf("\ndestino %d",execute->destino);
-			printf("\ndado_w %d",execute->dado_w);
-			printf("\ndado_wm %d",execute->dado_wm);
-			printf("\nrd %d",execute->rd);
-			printf("\nrs %d",execute->rs);
-			printf("\nrt %d",execute->rt);
+			printf("\nEscreveReg %.2d",execute->EscreveReg);
+			printf("\nLeMem %.2d",execute->LeMem);
+			printf("\nMemparaReg %.2d",execute->MemparaReg);
+			printf("\nresultado %.2d",execute->resultado);
+			printf("\ndestino %.2d",execute->destino);
+			printf("\ndado_w %.2d",execute->dado_w);
+			printf("\ndado_wm %.2d",execute->dado_wm);
+			printf("\nrd %.2d",execute->rd);
+			printf("\nrs %.2d",execute->rs);
+			printf("\nrt %2d",execute->rt);
 		}
 
 		if (memory->exit==1 ||memory->inst.op==-1) {
@@ -1555,22 +1556,22 @@ void print (IF_ID * fetch,ID_EX * decode,EX_MEM* execute,MEM_WB * memory) {
 			//printf("executando Instruçao \nop %d \nrs %d \nrt %d \nrd %d \nsh %d\n",memory->inst.op,memory->inst.rs1,memory->inst.rt1,memory->inst.rd1,memory->inst.sh1,memory->inst.funct);
 			//printf("imediato %d \nendereço %d \noffset %d\n\n\n\n",memory->inst.imediato,memory->inst.end1,memory->inst.extensao);
 
-			printf("\nEscreveReg %d",memory->EscreveReg);
-			printf("\nMemparaReg %d",memory->MemparaReg);
-			printf("\ndado_r %d",memory->dado_r);
-			printf("\nreultado %d",memory->resultado);
-			printf("\ndestino %d",memory->destino);
-			printf("\nrd %d",memory->rd);
-			printf("\nrs %d",memory->rs);
-			printf("\nrt %d",memory->rt);
+			printf("\nEscreveReg %.2d",memory->EscreveReg);
+			printf("\nMemparaReg %.2d",memory->MemparaReg);
+			printf("\ndado_r %.2d",memory->dado_r);
+			printf("\nreultado %.2d",memory->resultado);
+			printf("\ndestino %.2d",memory->destino);
+			printf("\nrd %.2d",memory->rd);
+			printf("\nrs %.2d",memory->rs);
+			printf("\nrt %.2d",memory->rt);
 
 			printf("\n\tWriteback\n");
 			printinst(&memory->inst);
 
-			printf("\n\nMemparareg %d\n",memory->MemparaReg);
-			printf("Destino %d\n",memory->destino);
-			printf("Escrevereg %d\n",memory->EscreveReg);
-			printf("dado W %d\n",dado_w);
+			printf("\n\nMemparareg %.2d\n",memory->MemparaReg);
+			printf("Destino %.2d\n",memory->destino);
+			printf("Escrevereg %.2d\n",memory->EscreveReg);
+			printf("dado W %.2d\n",dado_w);
 
 
 
@@ -1617,7 +1618,7 @@ void instruction_decode (IF_ID * fetch,ID_EX * decode,int * Reg,Sinais * sc) {
 				decode->funct=fetch->inst.funct;
 				decode->dado1=reg[fetch->inst.rs1];
 				JReg=reg[fetch->inst.rs1];
-				printf("JGEG %d", JReg);
+				//printf("JGEG %d", JReg);
 				decode->dado2=reg[fetch->inst.rt1];
 				decode->rs=fetch->inst.rs1;
 				decode->rt=fetch->inst.rt1;
@@ -1757,7 +1758,7 @@ int ULA (int a,int b,int cont_ula) {
 			c=a*b;
 			break;
     }
-	printf("\n%d+%d=%d\n",a,b,c);
+	//printf("\n%d+%d=%d\n",a,b,c);
     return c;
 }
 void Execute (ID_EX * decode,EX_MEM * execute, int Fcontrol) {
@@ -1871,7 +1872,7 @@ void Memory (EX_MEM * execute,MEM_WB * memory,int op1) {
 				tag=execute->resultado>>bitsindice;
 				while (cachemiss1==1) {
 					for (i=0;i<2;i++) {			//Buscar na cache
-						printf("\ncachemiss2: %d \n",cachemiss1);
+						//printf("\ncachemiss2: %d \n",cachemiss1);
 						if (cacheinst[endcache][i].v==1) {
 							if (cacheinst[endcache][i].tag==tag) {
 								memory->dado_r=cachedado[endcache][i].dado;
@@ -1889,7 +1890,7 @@ void Memory (EX_MEM * execute,MEM_WB * memory,int op1) {
 					}
 					if (cachemiss1==1) {
 						for (j=0;j<2;j++) {	//Buscar na memória
-							printf("\nEstou aqui e sua validade é %d\n ", cachedado[endcache][j].v);
+							//printf("\nEstou aqui e sua validade é %d\n ", cachedado[endcache][j].v);
 							if (cachedado[endcache][j].v==0){
 								//printf("\ncachemiss: %d \n",cachemiss1);
 								cachedado[endcache][j].dado=memory->dado_r;
@@ -1907,12 +1908,12 @@ void Memory (EX_MEM * execute,MEM_WB * memory,int op1) {
 								x=1;
 
 								cachemiss1=0;
-								printf("cachemiss de baixo %d", cachemiss1);
+								//printf("cachemiss de baixo %d", cachemiss1);
 							}
 							else x=0;
 						}
 						if (x==0) {
-							printf("x %d\n", x);
+							//printf("x %d\n", x);
 							for (j=0;j<2;j++) { //busca e substituição
 								if(cachedado[endcache][j].r==0) {
 									if (cachedado[endcache][j].m==1) {
@@ -2001,10 +2002,10 @@ void Memory (EX_MEM * execute,MEM_WB * memory,int op1) {
 					tag=execute->resultado>>bitsindice;
 					while (cachemiss2==1) {
 						for (k=0;k<2;k++) {
-							printf("tag %d\n", tag);
+							//printf("tag %d\n", tag);
 							if(cachedado[endcache][k].tag==tag){
 								cachedado[endcache][k].dado=execute->dado_wm;
-								printf(" comparacao das tags cachedado[%d][%d].dado %d\n",endcache,k, cachedado[endcache][k].dado);
+								//printf(" comparacao das tags cachedado[%d][%d].dado %d\n",endcache,k, cachedado[endcache][k].dado);
 
 								cachedado[endcache][k].m=1;
 								cachemiss2=0;
@@ -2018,8 +2019,8 @@ void Memory (EX_MEM * execute,MEM_WB * memory,int op1) {
 									cachedado[endcache][i].dado=execute->dado_wm;
 									cachedado[endcache][i].tag=execute->resultado>>bitsindice;
 
-									printf(" inserçao dado=execute->dado_wm %d \n",execute->dado_wm);
-									printf("cachedado[endcache][i].dado %d \n", cachedado[endcache][i].dado);
+									//printf(" inserçao dado=execute->dado_wm %d \n",execute->dado_wm);
+									//printf("cachedado[endcache][i].dado %d \n", cachedado[endcache][i].dado);
 									cachedado[endcache][i].r=1;
 									cachedado[endcache][i].v=1;
 									if (i==0) {
@@ -2037,13 +2038,13 @@ void Memory (EX_MEM * execute,MEM_WB * memory,int op1) {
 					//}
 							if (x==0) {
 								for (j=0;j<2;j++) { //substituição
-									printf(" substituicao cachedado[endcache][j].r %d", cachedado[endcache][j].r);
+									//printf(" substituicao cachedado[endcache][j].r %d", cachedado[endcache][j].r);
 									if(cachedado[endcache][j].r==0) {
-										printf("modificaçao %d\n",cachedado[endcache][j].m);
+										//printf("modificaçao %d\n",cachedado[endcache][j].m);
 										if (cachedado[endcache][j].m==1) {
 											endmem=tag<<bitsindice;
 											endmem=endmem & endcache;
-											printf(" endmem%d\n", endmem);
+											//printf(" endmem%d\n", endmem);
 											data_memory[endmem]=cachedado[endcache][j].dado;
 										}
 										cachedado[endcache][j].dado=data_memory[execute->resultado];
@@ -2061,7 +2062,7 @@ void Memory (EX_MEM * execute,MEM_WB * memory,int op1) {
 							}
 						}
 					}
-					printf("Cachemiss2: %d \n",cachemiss2);
+					//printf("Cachemiss2: %d \n",cachemiss2);
 					break;
 				case 2:
 					endcache=execute->resultado%(linha1);
@@ -2187,7 +2188,9 @@ int menu2 () {
 	scanf("%d",&op);
 	return op;
 }
-int main (void) {
+int main (int argc, char** argv) {
+	strcpy(ARQ,argv[1]);
+	printf("%s",ARQ);
 	Instrucao x;
 	int j;
 	char inst[30];
@@ -2206,7 +2209,9 @@ int main (void) {
 	op1=menu2();
 	FILE *fp;
 	FILE *disco;
-	fp=fopen("teste.txt","rt");
+	printf("%s", ARQ);
+	fp=fopen(ARQ,"rt");
+
 	disco=fopen("disco.eexe","wb");
 	cont=0;
 	extensao=0;
@@ -2265,6 +2270,7 @@ int main (void) {
 	}
 	fclose(fp);
 	fclose(disco);
+	imprime_cache_dados(cachedado);
 	//imprime_mem(memoria,cont);
 	imprime_mem_dados(data_memory);
 
